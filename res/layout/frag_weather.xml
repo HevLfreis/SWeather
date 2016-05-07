@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:id="@+id/tab_weather"
+    android:background="#eee"
+    android:orientation="vertical" >
+        
+
+		
+
+        
+        <TextView
+            android:id="@+id/city_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="center_vertical"
+            android:paddingLeft="5dp"
+            android:paddingTop="10dp"
+            android:text="城市"
+            android:textSize="40sp" />
+
+        <TextView
+            android:id="@+id/temp_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/city_text"
+            android:gravity="center_vertical"
+            android:paddingLeft="5dp"
+            android:text="正在获取"
+            android:textSize="20sp" />
+
+        <TextView
+            android:id="@+id/weatherinfo_text"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/temp_text"
+            android:gravity="center_vertical"
+            android:paddingLeft="5dp"
+            android:text="正在获取"
+            android:textSize="20sp" />
+
+        <TextView
+            android:id="@+id/index_text"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/weatherinfo_text"
+            android:paddingLeft="5dp"
+            android:text="建议"
+            android:textSize="20sp" />
+
+
+        <ImageView
+            android:id="@+id/image_tq"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_above="@+id/index_text"
+            android:layout_alignParentRight="true"
+            android:layout_marginRight="25dp"
+           android:background="@drawable/tq_unknown" />
+
+        <LinearLayout
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:layout_marginBottom="20dp"
+            android:layout_alignParentBottom="true"
+            android:orientation="vertical">
+            
+            <TextView
+                android:id="@+id/temp2_text"
+            android:layout_marginTop="5dp"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="5dp"
+            android:paddingLeft="5dp"
+            android:text="..."
+            android:textSize="20sp" />
+             <View
+               android:layout_width="fill_parent"
+               android:layout_height="1.0px"
+               android:layout_marginLeft="1.0px"
+               android:layout_marginRight="1.0px"
+               android:background="#ffc2c8cd"
+                />
+            <TextView
+            android:id="@+id/temp3_text"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="5dp"
+            android:layout_marginBottom="5dp"
+            android:paddingLeft="5dp"
+            android:text="..."
+            android:textSize="20sp" />
+             <View
+               android:layout_width="fill_parent"
+               android:layout_height="1.0px"
+               android:layout_marginLeft="1.0px"
+               android:layout_marginRight="1.0px"
+               android:background="#ffc2c8cd"
+                />
+            <TextView
+                android:id="@+id/temp4_text"
+            android:layout_marginTop="5dp"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="5dp"
+            android:paddingLeft="5dp"
+            android:text="..."
+            android:textSize="20sp" />
+
+            
+        </LinearLayout>
+
+</RelativeLayout>

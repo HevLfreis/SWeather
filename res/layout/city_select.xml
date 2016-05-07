@@ -1,0 +1,165 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    
+    android:orientation="vertical" >
+
+
+   <LinearLayout
+       android:layout_width="280dp"
+       android:layout_height="wrap_content"
+       android:layout_centerVertical="true"
+       android:layout_centerHorizontal="true"
+       android:background="@drawable/dialog_bg"
+       android:orientation="vertical" >
+
+       <TextView
+           android:id="@+id/dialogtitle"
+           android:layout_width="fill_parent"
+           android:layout_height="wrap_content"
+           android:layout_marginBottom="10dp"
+           android:layout_marginTop="10dp"
+           android:gravity="center_horizontal"
+           android:text="请选择城市"
+           android:textSize="25sp" />
+
+       <View
+           android:layout_width="fill_parent"
+           android:layout_height="1.0px"
+           android:layout_marginLeft="1.0px"
+           android:layout_marginRight="1.0px"
+           android:background="#ffc2c8cd" />
+
+
+       <RadioGroup
+           android:id="@+id/radioGroup_cityselect"
+           android:layout_width="fill_parent"
+           android:layout_height="wrap_content"
+            >
+
+         <RadioButton
+               android:id="@+id/radio_base"
+               android:layout_width="wrap_content"
+               android:layout_height="wrap_content"
+               android:checked="true"
+               android:textColor="#ff000000"
+               android:text="输入要查询的城市"
+               android:textSize="20sp" />
+
+               <EditText
+            android:id="@+id/edit_city"
+           android:layout_width="fill_parent"
+           android:layout_height="wrap_content"
+           android:layout_marginBottom="5dp"
+           android:layout_marginRight="5dp"
+           android:layout_marginLeft="5dp"
+           android:ems="10"
+           android:background="@drawable/edittext_bg" >
+
+                  <requestFocus />
+              </EditText>
+              
+       <View
+               android:layout_width="fill_parent"
+               android:layout_height="1.0px"
+               android:layout_marginLeft="1.0px"
+               android:layout_marginRight="1.0px"
+               android:background="#ffc2c8cd"
+                />
+ 
+             
+
+
+        <RadioButton
+               android:id="@+id/radio_city1"
+               android:layout_width="wrap_content"
+               android:layout_height="wrap_content"
+               android:text="城市1"
+               android:textSize="20sp"
+               android:textColor="#ff000000"/>
+        
+
+           <View
+               android:layout_width="fill_parent"
+               android:layout_height="1.0px"
+               android:layout_marginLeft="1.0px"
+               android:layout_marginRight="1.0px"
+               android:background="#ffc2c8cd"
+                />
+           
+         <RadioButton
+               android:id="@+id/radio_city2"
+               android:layout_width="wrap_content"
+               android:layout_height="wrap_content"
+               android:text="城市2"
+               android:textSize="20sp"
+               android:textColor="#ff000000" />
+
+           <View
+               android:layout_width="fill_parent"
+               android:layout_height="1.0px"
+               android:layout_marginLeft="1.0px"
+               android:layout_marginRight="1.0px"
+               android:background="#ffc2c8cd"
+                />
+        <RadioButton
+               android:id="@+id/radio_city3"
+               android:layout_width="wrap_content"
+               android:layout_height="wrap_content"
+               android:text="城市3"
+               android:textSize="20sp"
+               android:textColor="#ff000000" />
+ 
+
+        
+
+       </RadioGroup>
+  
+
+       <LinearLayout
+           android:id="@+id/btn_okcancel"
+           android:layout_width="fill_parent"
+           android:layout_height="wrap_content"
+           android:layout_marginTop="3dp"
+           
+           android:layout_centerHorizontal="true"
+           android:gravity="center"
+           android:orientation="horizontal"
+           android:layout_marginBottom="2dp"
+            >
+
+           <TextView
+               android:id="@+id/dialogLeftBtn"
+               android:layout_width="fill_parent"
+               android:layout_height="46.0dip"
+               android:layout_marginLeft="5dp"
+               android:layout_marginRight="5.0dip"
+               android:layout_weight="1"
+               android:background="@drawable/search_button_bg"
+               android:clickable="true"
+               android:gravity="center"
+               android:singleLine="true"
+               android:text="确定"
+               android:textSize="20sp" />
+
+           <TextView
+               android:id="@+id/dialogRightBtn"
+               android:layout_width="fill_parent"
+               android:layout_height="46.0dip"
+               android:layout_marginLeft="5.0dip"
+               android:layout_marginRight="5dp"
+               android:layout_weight="1"
+               android:background="@drawable/search_button_bg"
+               android:clickable="true"
+               android:gravity="center"
+               android:singleLine="true"
+               android:text="取消"
+               android:textSize="20sp" />
+
+       </LinearLayout>
+       <View android:layout_width="fill_parent" android:layout_height="5.0dp" />
+   </LinearLayout>
+      
+
+</RelativeLayout>
