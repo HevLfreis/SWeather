@@ -247,7 +247,7 @@ public class MainActivity extends FragmentActivity {
 						//System.out.println(cities[i]);
 						
 						 values.put("timestamp", System.currentTimeMillis());
-						 values.put("city", cities[i]);
+						 values.put("city", cities[CURRINDEX]);
 						 
 						 for (int j = 1; j < weatherData.length() + 1; j++) {
 							 JSONObject data = (JSONObject)weatherData.opt(j - 1); 
