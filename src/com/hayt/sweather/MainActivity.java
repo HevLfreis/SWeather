@@ -199,7 +199,7 @@ public class MainActivity extends FragmentActivity {
 			});
 			 j=new JsonAsync();
 			 System.out.println("Urls prepared : "+Arrays.toString(citiesUrls));
-			 j.execute(citiesUrls);	 
+			 j.execute(citiesUrls[CURRINDEX]);	 
 		}
 		 else {
 			 return;
