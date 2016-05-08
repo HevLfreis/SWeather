@@ -2,6 +2,8 @@ package com.hayt.sweather;
 
 
 import java.io.InputStream;
+import java.util.Arrays;
+import java.util.Map;
 
 import android.R.integer;
 import android.app.Activity;
@@ -26,7 +28,8 @@ private TextView ok,cancel=null;
 private RadioGroup citys =null;
 private RadioButton base, city1, city2, city3 =null;
 private EditText editText;
-private String cityName, namemem1, namemem2, namemem3;
+private String cityName, namemem0, namemem1, namemem2;
+private String[] namemem;
 private String cityNamefromRB=null;
 private int id;
 
@@ -34,6 +37,7 @@ private int id;
 	protected void onCreate(Bundle savedInstanceState) {
 		// TODO Auto-generated method stub
 		super.onCreate(savedInstanceState);
+		
 		setContentView(R.layout.city_select);
 		ok=(TextView) findViewById(R.id.dialogLeftBtn);
 		cancel=(TextView) findViewById(R.id.dialogRightBtn);
@@ -60,16 +64,27 @@ private int id;
 		cancel.setOnClickListener(new cancellistener());
 
 		//得到设置数据
-		SharedPreferences sp=getSharedPreferences("SETTING_CITY", MODE_PRIVATE);
- 
-		namemem1=sp.getString("city_weather_name1", "无");
-		namemem2=sp.getString("city_weather_name2", "无");
-		namemem3=sp.getString("city_weather_name3", "无");
+//		SharedPreferences sp = getSharedPreferences("SETTINGS_DIALOG", MODE_PRIVATE);
+// 
+//		namemem0=sp.getString("cityName0", "无");
+//		namemem1=sp.getString("cityName1", "无");
+//		namemem2=sp.getString("cityName2", "无");
+		
+        Map<String, ?> cityMap = getSharedPreferences("CITIES_DIALOG", 0).getAll();
+        
+        namemem = new String[3];
+        
+        int i = 0;
+        for(Map.Entry<String, ?>  entry : cityMap.entrySet()) {
+        	namemem[i++] = (String) entry.getValue();
+        }
+		
+		
 
 		//初始化radiobutton文字
-		city1.setText(namemem1);
-		city2.setText(namemem2);
-		city3.setText(namemem3);
+		city1.setText(namemem[2]);
+		city2.setText(namemem[1]);
+		city3.setText(namemem[0]);
 
         editText=(EditText) findViewById(R.id.edit_city);
    	    editText.setOnEditorActionListener(new OnEditorActionListener(){
@@ -92,12 +107,12 @@ private int id;
 				// TODO Auto-generated method stub
 				
                 if (base.getId()==checkedId) {
-	        	editText.setVisibility(0);
+                	editText.setVisibility(0);
 					
 				}
                 else if (city1.getId()==checkedId) {
 
-                	cityNamefromRB=namemem1;
+                	cityNamefromRB=namemem[2];
                 	editText.setVisibility(8);
                 	
 
@@ -105,14 +120,14 @@ private int id;
 				}
                 else if (city2.getId()==checkedId) {
 
-                	cityNamefromRB=namemem2;
+                	cityNamefromRB=namemem[1];
                 	editText.setVisibility(8);
 
 					
 				}
                 else if (city3.getId()==checkedId) {
 
-                	cityNamefromRB=namemem3;
+                	cityNamefromRB=namemem[0];
                 	editText.setVisibility(8);
 
 					
@@ -133,7 +148,7 @@ private int id;
 			if (base.isChecked()) {
 				InputStream inputStream = getResources().openRawResource(R.raw.citycode);
 				cityName = editText.getText().toString();
-				System.out.println("cityname type 0 :"+cityName);
+				
 				if (!CityChecked.existed(inputStream, cityName)) {
 					Toast.makeText(CitySelectDialog.this, "请正确输入", Toast.LENGTH_SHORT).show();
 					finish();
@@ -141,44 +156,58 @@ private int id;
 					
 				}
 				//Toast.makeText(CityWeatherSelectDialog.this, cityCode, Toast.LENGTH_SHORT).show();
-			
-                namemem3=namemem2;
-                namemem2=namemem1;
-                namemem1=cityName;
+				namemem[0]=namemem[1];
+                namemem[1]=namemem[2];
+                namemem[2]=cityName;
+                
                 
                 //更新selector设置缓存
-			    SharedPreferences sp =getSharedPreferences("SETTING_CITY", MODE_PRIVATE);
+			    SharedPreferences sp =getSharedPreferences("CITIES_DIALOG", MODE_PRIVATE);
 		        Editor editor = sp.edit();
 		        
-		        editor.putString("city_weather_name1", namemem1);
-		        editor.putString("city_weather_name2", namemem2);
-		        editor.putString("city_weather_name3", namemem3);
+		        System.out.println(Arrays.toString(namemem));
+		        
+		        for (int i = 0; i < 3; i++) {
+		        	editor.putString("temp"+String.valueOf(i), namemem[i]);
+		        }
+//		        
+//		        editor.putString("cityName0", namemem[0]);
+//		        editor.putString("cityName1", namemem[1]);
+//		        editor.putString("cityName2", namemem[2]);
 		        editor.commit();
 		        
-		        //更新主setting设置
-		        SharedPreferences sp2 =getSharedPreferences("SETTINGS", MODE_PRIVATE);
-		        Editor editor2 = sp2.edit();
-		        editor2.putString("city_weather"+String.valueOf(id+1), namemem1);
-		        editor2.commit();
+		        MainActivity.instance.updateCities(id, cityName);
+//		        
+//		        //更新主setting设置
+//		        SharedPreferences sp2 =getSharedPreferences("SETTINGS", MODE_PRIVATE);
+//		        Editor editor2 = sp2.edit();
+//		        editor2.putInt("cityState"+String.valueOf(id), 1);
+//		        editor2.putString("cityName"+String.valueOf(id), namemem0);
+//		        editor2.commit();
 		        Toast.makeText(CitySelectDialog.this,"正在更新...",Toast.LENGTH_SHORT ).show();
 		        Application.NEED_FRESH=true;
 			
 			}
 			else {
 				cityName=cityNamefromRB;
-				SharedPreferences sp2 =getSharedPreferences("SETTINGS", MODE_PRIVATE);
-		        Editor editor2 = sp2.edit();
-		        editor2.putInt("city"+String.valueOf(id+1), 1);
-		        editor2.putString("city_weather"+String.valueOf(id+1), cityName);
-		        editor2.commit();
+				System.out.println("ID : "+id+" city : "+cityName+" update");
+				MainActivity.instance.updateCities(id, cityName);
+				
+				
+				
+//				SharedPreferences sp2 =getSharedPreferences("SETTINGS", MODE_PRIVATE);
+//		        Editor editor2 = sp2.edit();
+//		        editor2.putInt("cityState"+String.valueOf(id), 1);
+//		        editor2.putString("cityName"+String.valueOf(id), cityName);
+//		        editor2.commit();
 		        Toast.makeText(CitySelectDialog.this,"正在更新...",Toast.LENGTH_SHORT ).show();
-		        Application.NEED_FRESH=true;
+		        Application.NEED_FRESH = true;
           	
 				
 			}
-			System.out.println("page new city update : "+cityName);
+			System.out.println("Page new city update : " + cityName);
 			MainActivity.CURRINDEX = id;
-			System.out.println("page selcted: "+MainActivity.CURRINDEX);
+			System.out.println("Page selcted: " + MainActivity.CURRINDEX);
 			finish();
 			
 		}

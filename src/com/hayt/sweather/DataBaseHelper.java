@@ -25,9 +25,9 @@ public class DataBaseHelper extends SQLiteOpenHelper{
 	@Override
 	public void onCreate(SQLiteDatabase db) {
 		// TODO Auto-generated method stub
-		db.execSQL("create TABLE cache(timestamp long,city varchar(50),temp1 varchar(50),temp2 varchar(50)," +
+		db.execSQL("create TABLE cache(pageid int,city varchar(50),temp1 varchar(50),temp2 varchar(50)," +
 				"temp3 varchar(50),temp4 varchar(50),weather1 varchar(50)" +
-				",weather2 varchar(50),weather3 varchar(50),weather4 varchar(50),index_d varchar(100))");
+				",weather2 varchar(50),weather3 varchar(50),weather4 varchar(50),index_d varchar(100),timestamp long)");
 		
 	}
 

@@ -12,12 +12,12 @@ import android.os.Handler;
 
 public class Application extends Activity{
 	
-	private SharedPreferences setting1, setting2;
-	private int count = 0;
-	public static int TAB_COUNT = 3;
-	public static boolean UPDATE_OVER = false;  //weather update finished
+	private SharedPreferences settings, cityList, cityDialog;
+	private int count;
+	public static int PAGE_NUM = 0;
+//	public static boolean UPDATE_OVER = false;  //weather update finished
 	public static boolean NEED_FRESH = false;
-	public static String[] CITYLIST = {"","",""};;
+//	public static String[] CITYLIST = {"","",""};;
 	
 
 	@Override
@@ -27,9 +27,11 @@ public class Application extends Activity{
 		setContentView(R.layout.activity_start);
 
 		
-		setting1=getSharedPreferences("SETTINGS", MODE_PRIVATE);
-		setting2=getSharedPreferences("SETTING_CITY", MODE_PRIVATE);
-		count =setting1.getInt("count", 0);
+		settings = getSharedPreferences("SETTINGS", MODE_PRIVATE);
+//		cityList = getSharedPreferences("CITIES_LIST", MODE_PRIVATE);
+		cityDialog = getSharedPreferences("CITIES_DIALOG", MODE_PRIVATE);
+		count = settings.getInt("count", 0);
+		PAGE_NUM = settings.getInt("page-num", 0);
 		
 		new Handler().postDelayed(new Runnable() {
 			
@@ -39,23 +41,27 @@ public class Application extends Activity{
 				
 				if(count == 0){
 
-			        Editor editor = setting1.edit();
-			        editor.putInt("city1", 0);
-			        editor.putInt("city2", 0);
-			        editor.putInt("city3", 0);
-			        editor.putString("city_weather1", "");
-			        editor.putString("city_weather2", "");
-			        editor.putString("city_weather3", "");
+			        Editor editor = settings.edit();
+//			        editor.putInt("city-state-0", 0);
+//			        editor.putInt("cityState1", 0);
+//			        editor.putInt("cityState2", 0);
+//			        editor.putString("city-name-0", "");
+//			        editor.putString("cityName1", "");
+//			        editor.putString("cityName2", "");
 			        
 			        editor.putInt("count", 1);
+			        editor.putInt("page-num", 0);
 			        editor.commit();
 			        
-			        Editor editor2 = setting2.edit();
+			        Editor editor2 = cityDialog.edit();
 			        //dialog写入，主activity读出
 			        //dialog用作设置缓存
-			        editor2.putString("city_weather_name1", "上海");
-			        editor2.putString("city_weather_name2", "杭州");
-			        editor2.putString("city_weather_name3", "北京");
+			        editor2.putString("temp0", "上海");
+			        editor2.putString("temp1", "杭州");
+			        editor2.putString("temp2", "北京");
+//			        editor2.putString("city-name-0", "上海");
+//			        editor2.putString("city-name-1", "杭州");
+//			        editor2.putString("city-name-2", "北京");
 			        editor2.commit();
 
 			        Intent intent =new Intent();
@@ -64,7 +70,7 @@ public class Application extends Activity{
 					Application.this.finish();
 
 				}
-				else if(count!=0){
+				else if(count != 0){
 					Intent intent = new Intent ();	
 					intent.setClass(Application.this, MainActivity.class);
 					startActivity(intent);			

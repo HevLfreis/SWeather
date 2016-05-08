@@ -29,17 +29,22 @@ import android.database.sqlite.SQLiteDatabase;
 
 public class WFragment extends Fragment{
 	
-	private int id = 0;
-	private int type = 0;
-	private TextView textCity,textWeather,textIndex,textTemp,textTemp2,textTemp3,textTemp4=null;
+	private int id;
+	private int type;
+	private TextView textCity, textWeather, textIndex, textTemp, textTemp2, textTemp3, textTemp4 = null;
 	private ImageView tq;
 	private ImageView imageView = null;
 	private String index;
 	private Context context = null;
-	private ArrayList<HashMap<String, String>> list;
+	
+//	public static WFragment newInstance(int id, Context context, int type) {
+//        WFragment wf = new WFragment(id, context, type);
+//        return wf;
+//    }
 	
 	public WFragment(int id, Context context, int type) {
 		// TODO Auto-generated constructor stub
+		System.out.println("Fragment create -- Type: " + type);
 		this.id = id;
 		this.context = context;
 		this.type = type;
@@ -49,6 +54,7 @@ public class WFragment extends Fragment{
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		// TODO Auto-generated method stub
+		System.out.println("Fragment: "+id+" Cur index : "+MainActivity.CURRINDEX);
 		super.onCreate(savedInstanceState);
 	}
 
@@ -58,8 +64,9 @@ public class WFragment extends Fragment{
 			Bundle savedInstanceState) {
 		// TODO Auto-generated method stub
 		
-		
+		System.out.println("Fragment create view -- Type: " + type);
 		if (type == 0) {
+			
 			View fragmentView = inflater.inflate(R.layout.frag_new, container, false);
 			imageView = (ImageView) fragmentView.findViewById(R.id.image_add);
 			imageView.setOnClickListener(new OnClickListener() {
@@ -77,8 +84,8 @@ public class WFragment extends Fragment{
 			return fragmentView;
 		}
 		else {
+			
 			View fragmentView = inflater.inflate(R.layout.frag_weather, container, false);
-			list = new ArrayList<HashMap<String,String>>();
 	        
 			textCity=(TextView) fragmentView.findViewById(R.id.city_text);
 			textWeather=(TextView) fragmentView.findViewById(R.id.weatherinfo_text);
@@ -93,44 +100,43 @@ public class WFragment extends Fragment{
 			
 			tq=(ImageView) fragmentView.findViewById(R.id.image_tq);
 
-			textCity.setOnClickListener(new textCitylistener());
+			textCity.setOnClickListener(new textCityListener());
 
 			DataBaseHelper dbHelper=new DataBaseHelper(context,"cache.db");  
 	        SQLiteDatabase db=dbHelper.getReadableDatabase();  
-	        
-	        Cursor cursor=db.query("cache", new String[]{"timestamp","city" ,"temp1","temp2","temp3","temp4","weather1",
+	         
+	        Cursor cursor=db.query("cache", new String[]{"timestamp", "city" ,"temp1","temp2","temp3","temp4","weather1",
 	        		"weather2","weather3","weather4","index_d"}
-	        , "city like ?",new String[]{Application.CITYLIST[id]}, null, null, "timestamp desc");  
+	        , "pageid = ?",new String[]{ String.valueOf(id) }, null, null, "timestamp desc");  
 	        
-	        if (cursor == null) {
-	        	return fragmentView;
-				
-			}
 	        cursor.moveToNext();
-	       
+//	        if (cursor.isLast()) return fragmentView;
+	        
+	        
 	        
 	        
 	        String temp1 = null,temp2 = null,  temp3 = null ,temp4 = null,
 	        weather1 = null ,weather2 = null ,weather3 = null ,weather4 = null, index="...";
+	        String city = cursor.getString(cursor.getColumnIndex("city"));
+	        System.out.println("Page: "+ id +" Query: " + city);
 	        
-	        if (cursor.getColumnIndex("temp1")!=-1) {
-	        	 temp1 = cursor.getString(cursor.getColumnIndex("temp1"));
-	             temp2 = cursor.getString(cursor.getColumnIndex("temp2"));
-	             temp3 = cursor.getString(cursor.getColumnIndex("temp3"));
-	             temp4 = cursor.getString(cursor.getColumnIndex("temp4"));
 	        
-	             weather1 = cursor.getString(cursor.getColumnIndex("weather1"));
-	             weather2 = cursor.getString(cursor.getColumnIndex("weather2"));
-	             weather3 = cursor.getString(cursor.getColumnIndex("weather3"));
-	             weather4 = cursor.getString(cursor.getColumnIndex("weather4"));
+        	temp1 = cursor.getString(cursor.getColumnIndex("temp1"));
+	        temp2 = cursor.getString(cursor.getColumnIndex("temp2"));
+	        temp3 = cursor.getString(cursor.getColumnIndex("temp3"));
+	        temp4 = cursor.getString(cursor.getColumnIndex("temp4"));
+	    
+	        weather1 = cursor.getString(cursor.getColumnIndex("weather1"));
+	        weather2 = cursor.getString(cursor.getColumnIndex("weather2"));
+	        weather3 = cursor.getString(cursor.getColumnIndex("weather3"));
+	        weather4 = cursor.getString(cursor.getColumnIndex("weather4"));
 	      
-	             index = cursor.getString(cursor.getColumnIndex("index_d"));
-			}
+	        index = cursor.getString(cursor.getColumnIndex("index_d"));
+			
 	        cursor.close();
 	        
-	    	db.close();
-	    	
-			String city = Application.CITYLIST[id];
+	    	db.close();	    	
+			
 	    	textCity.setText(city);
 	    	textTemp.setText(temp1);
 	    	textTemp2.setText(dow(1)+temp2+"    "+weather2);
@@ -141,10 +147,10 @@ public class WFragment extends Fragment{
 	    	textIndex.setText(index);
 	    	setTqImage(weather1);
 	    		
-	    	if(Application.NEED_FRESH==true){
+	    	if(Application.NEED_FRESH == true){
 		    	Animation imagenter=AnimationUtils.loadAnimation(getActivity(), R.anim.toast_enter);
 		 		tq.startAnimation(imagenter);
-		 		Application.NEED_FRESH=false;
+		 		Application.NEED_FRESH = false;
 		    }
 			
 			return fragmentView;
@@ -165,16 +171,22 @@ public class WFragment extends Fragment{
 		
 	}
 	
+	public int getType() {
+		return this.type;
+		
+	}
+	
 	public void changeState(int type) {
 		this.type = type;
 	}
 	
-	class textCitylistener implements OnClickListener{
+	class textCityListener implements OnClickListener{
 
 		@Override
 		public void onClick(View v) {
 			// TODO Auto-generated method stub
 			Intent intent =new Intent();
+
 			intent.putExtra("type", 1);
 			intent.putExtra("page", id);
 			intent.setClass(getActivity(), CitySelectDialog.class);
@@ -183,7 +195,7 @@ public class WFragment extends Fragment{
 		
 	}
 	
-	class exitanimlistener implements AnimationListener{
+	class exitanimListener implements AnimationListener{
 
 		@Override
 		public void onAnimationEnd(Animation animation) {
@@ -207,73 +219,70 @@ public class WFragment extends Fragment{
 		
 	}
 	
-	
-	
-	@SuppressWarnings("deprecation")
 	private void setTqImage(String info){
 		TimeCal thour=new TimeCal();
 		int time2=thour.getCurerentHour();
 		
-		if(info.indexOf("Çç")!=-1){
+		if(info.contains("Çç")){
 		
 				if (time2>19||time2<6) {
-					tq.setBackgroundDrawable(getResources().getDrawable(R.drawable.tq_sunny_night));
+					tq.setBackground(getResources().getDrawable(R.drawable.tq_sunny_night));
 				}
 				else {
-					tq.setBackgroundDrawable(getResources().getDrawable(R.drawable.tq_sunny_day));
+					tq.setBackground(getResources().getDrawable(R.drawable.tq_sunny_day));
 				}
 		}
-		else if (info.indexOf("ÉÔµÈ")!=-1) {
-			tq.setBackgroundDrawable(getResources().getDrawable(R.drawable.tq_unknown));
+		else if (info.contains("ÉÔµÈ")) {
+			tq.setBackground(getResources().getDrawable(R.drawable.tq_unknown));
 		}
-		else if(info.indexOf("Ñ©")!=-1){
-			if (info.indexOf("Óê")!=-1) {
-				tq.setBackgroundDrawable(getResources().getDrawable(R.drawable.tq_sonwrain));
+		else if(info.contains("Ñ©")){
+			if (info.contains("Óê")) {
+				tq.setBackground(getResources().getDrawable(R.drawable.tq_sonwrain));
 			}
 			else {
-				tq.setBackgroundDrawable(getResources().getDrawable(R.drawable.tq_snowy));
+				tq.setBackground(getResources().getDrawable(R.drawable.tq_snowy));
 			}
 			
 		}
-		else if(info.indexOf("Óê")!=-1){
-			if (info.indexOf("À×")!=-1) {
-				tq.setBackgroundDrawable(getResources().getDrawable(R.drawable.tq_lightning));
+		else if(info.contains("Óê")){
+			if (info.contains("À×")) {
+				tq.setBackground(getResources().getDrawable(R.drawable.tq_lightning));
 			}
-			else if (info.indexOf("Ð¡")!=1) {
-				tq.setBackgroundDrawable(getResources().getDrawable(R.drawable.tq_rainy_small));
+			else if (info.contains("Ð¡")) {
+				tq.setBackground(getResources().getDrawable(R.drawable.tq_rainy_small));
 			}
-			else if (info.indexOf("ÖÐ")!=1) {
-				tq.setBackgroundDrawable(getResources().getDrawable(R.drawable.tq_rainy_mid));
+			else if (info.contains("ÖÐ")) {
+				tq.setBackground(getResources().getDrawable(R.drawable.tq_rainy_mid));
 			}
-			else if (info.indexOf("´ó")!=1) {
-				tq.setBackgroundDrawable(getResources().getDrawable(R.drawable.tq_rainy_big));
+			else if (info.contains("´ó")) {
+				tq.setBackground(getResources().getDrawable(R.drawable.tq_rainy_big));
 			}
-			else if (info.indexOf("±©")!=1) {
-				tq.setBackgroundDrawable(getResources().getDrawable(R.drawable.tq_rainy_big));
+			else if (info.contains("±©")) {
+				tq.setBackground(getResources().getDrawable(R.drawable.tq_rainy_big));
 			}
 			else {
-				tq.setBackgroundDrawable(getResources().getDrawable(R.drawable.tq_rainy_small));
+				tq.setBackground(getResources().getDrawable(R.drawable.tq_rainy_small));
 			}
 			
 		}
-		else if(info.indexOf("Òõ")!=-1){
+		else if(info.contains("Òõ")){
 			if (time2>19||time2<6) {
-				tq.setBackgroundDrawable(getResources().getDrawable(R.drawable.tq_cloudy_night));
+				tq.setBackground(getResources().getDrawable(R.drawable.tq_cloudy_night));
 			}
 			else {
-				tq.setBackgroundDrawable(getResources().getDrawable(R.drawable.tq_cloudy_day));
+				tq.setBackground(getResources().getDrawable(R.drawable.tq_cloudy_day));
 			}
 		}
-		else if(info.indexOf("¶àÔÆ")!=-1){
+		else if(info.contains("¶àÔÆ")){
 			if (time2>19||time2<6) {
-				tq.setBackgroundDrawable(getResources().getDrawable(R.drawable.tq_cloudy_night));
+				tq.setBackground(getResources().getDrawable(R.drawable.tq_cloudy_night));
 			}
 			else {
-				tq.setBackgroundDrawable(getResources().getDrawable(R.drawable.tq_cloudy_day));
+				tq.setBackground(getResources().getDrawable(R.drawable.tq_cloudy_day));
 			}
 		}	
 		else  {
-			tq.setBackgroundDrawable(getResources().getDrawable(R.drawable.tq_unknown));
+			tq.setBackground(getResources().getDrawable(R.drawable.tq_unknown));
 		}
 		
 	}

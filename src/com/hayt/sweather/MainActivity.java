@@ -3,13 +3,16 @@ package com.hayt.sweather;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
 
 
 
+import android.R.integer;
 import android.content.ContentValues;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
@@ -34,20 +37,21 @@ import android.widget.Toast;
 public class MainActivity extends FragmentActivity {
 	
 	public static MainActivity instance = null;
-	private ViewPager mTabPager;
+	private ViewPager mPager;
+	private MyPagerAdapter mPagerAdapter;
 	private RelativeLayout rl;
-
-	private String[] cities = {"","",""};
-	private String[] citiesUrls = {"","",""};
+	
+	private ArrayList<String> cities;
+	
+//	private String[] cities = {"","",""};
+//	private String[] citiesUrls = {"","",""};
 	private JsonAsync j;
 	
 	public static int CURRINDEX = 0;
 	
 	private boolean net = false;
 	
-	private isLoadDataListener loadLisneter;
-	
-	private List<Fragment> fragmentList;
+	private LinkedList<WFragment> fragmentList;
 	private WFragment wf1, wf2, wf3;
 	private boolean resume = false;
 
@@ -58,67 +62,82 @@ public class MainActivity extends FragmentActivity {
 		
 		getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN); 
         instance = this;
-        
-        
-        fragmentList = new ArrayList<Fragment>();
-        wf1 = new WFragment(0, instance, 0);
-        wf2 = new WFragment(1, instance, 0);
-        wf3 = new WFragment(2, instance, 0);
-        fragmentList.add(wf1);
-        fragmentList.add(wf2);
-        fragmentList.add(wf3);
+        cities = new ArrayList<String>();
+        fragmentList = new LinkedList<WFragment>();
+//        wf1 = new WFragment(0, instance, 0);
+//        wf2 = new WFragment(1, instance, 0);
+//        wf3 = new WFragment(2, instance, 0);
+//        fragmentList.add(wf1);
+//        fragmentList.add(wf2);
+//        fragmentList.add(wf3);
       
-        mTabPager = (ViewPager)findViewById(R.id.tabpager);
+        mPager = (ViewPager)findViewById(R.id.tabpager);
         
         //read setting data for create fragments
-        SharedPreferences sp = getSharedPreferences("SETTINGS", 0);
-        int[] cityState = {sp.getInt("city1",0),sp.getInt("city2",0),sp.getInt("city3",0)};
-        cities[0] = sp.getString("city_weather1", "");
-        cities[1] = sp.getString("city_weather2", "");
-        cities[2] = sp.getString("city_weather3", "");
-       
-        System.out.println("city1 is : "+cities[0]+cityState[0]);
-        System.out.println("city2 is : "+cities[1]+cityState[1]);
-        System.out.println("city3 is : "+cities[2]+cityState[2]);
+        Map<String, ?> cityMap = getSharedPreferences("CITIES_LIST", 0).getAll();
+        int i = 0;
+        for(Map.Entry<String, ?>  entry : cityMap.entrySet()) {
+        	cities.add(entry.getKey());
+        	fragmentList.add(new WFragment(i++, instance, 1));
+        	System.out.println("City added : "+entry.getKey());
+        }
+        
+        if (i != Application.PAGE_NUM) {
+        	System.out.println("Wrong ! ");
+			
+		}
+        fragmentList.add(new WFragment(Application.PAGE_NUM, instance, 0));
+        
+//        int[] cityState = {sp.getInt("cityState0",0),sp.getInt("cityState1",0),sp.getInt("cityState2",0)};
+//        cities[0] = sp.getString("cityName0", "");
+//        cities[1] = sp.getString("cityName1", "");
+//        cities[2] = sp.getString("cityName2", "");
+        
+        System.out.println("Main start");
+//        System.out.println("city1 is : "+cities[0]+" state: "+cityState[0]);
+//        System.out.println("city2 is : "+cities[1]+" state: "+cityState[1]);
+//        System.out.println("city3 is : "+cities[2]+" state: "+cityState[2]);
         
         
-        if (cityState[0] == 1) {
-			wf1.changeState(1);
-		}
-        if (cityState[1] == 1) {
-			wf2.changeState(1);
-		}
-        if (cityState[2] == 1) {
-			wf3.changeState(1);
-		}
+//        if (cityState[0] == 1) {
+//			wf1.changeState(1);
+//		}
+//        if (cityState[1] == 1) {
+//			wf2.changeState(1);
+//		}
+//        if (cityState[2] == 1) {
+//			wf3.changeState(1);
+//		}
         
-        for (int i = 0; i < 3; i++) {
-			if (cityState[i] == 1) {
-				Application.CITYLIST[i] = cities[i];
-				//fragmentList.add(new WFragment(i, instance, 1));
-				
-				// Important
-				// the weather interface is deprecated, you can change it to a new interface
-				citiesUrls[i] = "http://api.map.baidu.com/telematics/v3/weather?location="+cities[i]+"+&output=json&ak=QdzoydNb3Ix9Qfik2sbRrOfm";
-				System.out.println("WFragment added :" + citiesUrls[i]);
-			}
-		}
+//        for (int i = 0; i < 3; i++) {
+//			if (cityState[i] == 1) {
+//				Application.CITYLIST[i] = cities[i];
+//				
+//				// Important
+//				// the weather interface is deprecated, you can change it to a new interface
+//				citiesUrls[i] = "http://api.map.baidu.com/telematics/v3/weather?location="+cities[i]+"&output=json&ak=QdzoydNb3Ix9Qfik2sbRrOfm";
+//				System.out.println("WFragment added :" + citiesUrls[i]);
+//			}
+//		}
         
-		mTabPager.setOnPageChangeListener(new MyOnPageChangeListener());	
-        mTabPager.setAdapter(new MyPagerAdapter(getSupportFragmentManager(), fragmentList));
-		mTabPager.setOffscreenPageLimit(3);
-		mTabPager.setCurrentItem(1);
+		mPager.setOnPageChangeListener(new MyOnPageChangeListener());	
+		mPagerAdapter = new MyPagerAdapter(getSupportFragmentManager(), fragmentList);
+        mPager.setAdapter(mPagerAdapter);
+		mPager.setOffscreenPageLimit(3);
+		mPager.setCurrentItem(1);
 		Animation imagenter=AnimationUtils.loadAnimation(this, R.anim.fade_in);
- 		mTabPager.startAnimation(imagenter);
+ 		mPager.startAnimation(imagenter);
         ConnectionDetector cd = new ConnectionDetector(getApplicationContext());
         Boolean isInternetPresent = cd.isConnectingToInternet(); 
 		 if (isInternetPresent==true) {
+			 System.out.println("Update all page");
 			 
-			 getWeather();
+			 //
+			 getWeather(Application.PAGE_NUM);
 		 }
 		 else {
 			 Toast.makeText(MainActivity.this,"没有网络连接，无法更新天气",Toast.LENGTH_SHORT).show();
-			 net=false;
+			 net = false;
 		}
 		 
 		 //gesture
@@ -145,11 +164,11 @@ public class MainActivity extends FragmentActivity {
 	
 	public void startDeleteAnim() {
 		Animation imagenter=AnimationUtils.loadAnimation(this, R.anim.slide_down_out);
- 		mTabPager.startAnimation(imagenter);
+ 		mPager.startAnimation(imagenter);
  		SharedPreferences sp2 =getSharedPreferences("SETTINGS", MODE_PRIVATE);
         Editor editor2 = sp2.edit();
-        editor2.putInt("city"+String.valueOf(CURRINDEX+1), 0);
-        editor2.putString("city_weather_code"+String.valueOf(CURRINDEX+1), "");
+        editor2.putInt("cityState"+String.valueOf(CURRINDEX), 0);
+        editor2.putString("cityName"+String.valueOf(CURRINDEX), "");
         editor2.commit();
         if (CURRINDEX == 0) {
 			wf1.changeState(0);
@@ -160,15 +179,16 @@ public class MainActivity extends FragmentActivity {
         if (CURRINDEX == 2) {
 			wf3.changeState(0);
 		}
+        System.out.println("Page index deleted： " + CURRINDEX);
+        
  		new Handler().postDelayed(new Runnable() {
 			
 			@Override
 			public void run() {
 				// TODO Auto-generated method stub
-				mTabPager.getAdapter().notifyDataSetChanged();
+				mPagerAdapter.notifyDataSetChanged();
 		        //Application.NEED_FRESH=true;
-		        mTabPager.setCurrentItem(CURRINDEX);
-		 		System.out.println(CURRINDEX);
+		        mPager.setCurrentItem(CURRINDEX);
 		 		
 			}
 		}, 700);
@@ -177,29 +197,17 @@ public class MainActivity extends FragmentActivity {
 	}
 
 	
-	private void getWeather(){
+	private void getWeather(int index){
 		
 		 ConnectionDetector cd = new ConnectionDetector(getApplicationContext());
 		 
 		 Boolean isInternetPresent = cd.isConnectingToInternet(); 
 		 if (isInternetPresent==true) {
-			 setLoadDataComplete(new isLoadDataListener() {
-				
-				@Override
-				public void loadComplete() {
-					// TODO Auto-generated method stub
-					mTabPager.getAdapter().notifyDataSetChanged();
-					if (resume) {
-						mTabPager.setCurrentItem(CURRINDEX);
-						resume =false;
-					}
-					//mTabPager.setAdapter(new MyPagerAdapter(getSupportFragmentManager(), fragmentList));
-					System.out.println("update weather");
-				}
-			});
+
 			 j=new JsonAsync();
-			 System.out.println("Urls prepared : "+Arrays.toString(citiesUrls));
-			 j.execute(citiesUrls[CURRINDEX]);	 
+			 j.execute(String.valueOf(index));	
+		
+			  
 		}
 		 else {
 			 return;
@@ -210,67 +218,32 @@ public class MainActivity extends FragmentActivity {
 
 		@Override
 		protected void onPostExecute(String result) {
-			super.onPostExecute(result);
 
-			  if (loadLisneter != null) {
-	                loadLisneter.loadComplete();
-	            }
-			  Application.UPDATE_OVER=true;
+			
+			
+			mPagerAdapter.notifyDataSetChanged();
+			if (resume) {
+				mPager.setCurrentItem(CURRINDEX);
+				resume =false;
+			}
+			System.out.println("Updated weather");
 
 		}
 
-		@Override
 		protected String doInBackground(String... params) {
+			if (params.length != 1) return "";
 			
-			for (int i = 0; i < params.length; i++) {
-				if (!params[i].equals("")) {
+			
+			int index = Integer.parseInt(params[0]);	
 					
-					try {
-						JSONObject jsonObject;
-						
-						DataBaseHelper helper =new DataBaseHelper(MainActivity.this, "cache.db");
-						SQLiteDatabase db=helper.getWritableDatabase();
-						ContentValues values=new ContentValues();
-
-						String json = HttpUtil.getJson(params[i]);
-						
-						jsonObject = new JSONObject(json);
-						
-						if (jsonObject.getInt("error") != 0) {
-							Toast.makeText(MainActivity.this,"错误，更新失败",Toast.LENGTH_SHORT).show();
-							break;
-						}
-						
-						JSONObject results = jsonObject.getJSONArray("results").getJSONObject(0);
-						JSONArray weatherData = results.getJSONArray("weather_data");
-						
-						//System.out.println(cities[i]);
-						
-						 values.put("timestamp", System.currentTimeMillis());
-						 values.put("city", cities[CURRINDEX]);
-						 
-						 for (int j = 1; j < weatherData.length() + 1; j++) {
-							 JSONObject data = (JSONObject)weatherData.opt(j - 1); 
-							 System.out.println(data);
-							 values.put("temp"+String.valueOf(j), data.getString("temperature"));
-							 values.put("weather"+String.valueOf(j), data.getString("weather"));
-						 }
-			
-						 JSONObject index = results.getJSONArray("index").getJSONObject(0);
-						 values.put("index_d", index.getString("des"));
-						 db.insert("cache", null, values);
-						 
-						 System.out.println(values.toString());
-						
-						 db.close();
-						 					
-					} catch (Exception e) {
-						e.printStackTrace();
-						System.out.println("Except founded");
-						
-					}
+			if (index == Application.PAGE_NUM) {
+				for (int i = 0; i < index; i++) {
+					updateDb(i);					
 				}
-	
+			}
+			
+			else {
+				updateDb(index);
 			}
 				
 			
@@ -284,55 +257,112 @@ public class MainActivity extends FragmentActivity {
 			super.onCancelled();
 		}
 		
+		private void updateDb(int index) {
+			try {
+				
+				DataBaseHelper helper =new DataBaseHelper(MainActivity.this, "cache.db");
+				SQLiteDatabase db=helper.getWritableDatabase();
+				ContentValues values=new ContentValues();
+
+				String json = HttpUtil.getJson(WeatherProvider.wrap(cities.get(index)));
+				
+				System.out.println("Update weather from: " + WeatherProvider.wrap(cities.get(index))); 
+				
+				JSONObject jsonObject = new JSONObject(json);
+				
+				if (jsonObject.getInt("error") != 0) {
+					System.out.println("NetError");
+					Toast.makeText(MainActivity.this,"错误，更新失败",Toast.LENGTH_SHORT).show();
+					return;
+				}
+				
+				JSONObject results = jsonObject.getJSONArray("results").getJSONObject(0);
+				JSONArray weatherData = results.getJSONArray("weather_data");
+				
+				//System.out.println(cities[i]);
+				values.put("pageid", index);
+				values.put("timestamp", System.currentTimeMillis());
+				 
+				 // Danger !!!!!!!!!!
+				String city = results.getString("currentCity");
+				values.put("city", city);
+				 
+				for (int j = 1; j < weatherData.length() + 1; j++) {
+					JSONObject data = (JSONObject)weatherData.opt(j - 1);
+					values.put("temp"+String.valueOf(j), data.getString("temperature"));
+					values.put("weather"+String.valueOf(j), data.getString("weather"));
+				}
+				
+				JSONObject index_d = results.getJSONArray("index").getJSONObject(0);
+				values.put("index_d", index_d.getString("des"));
+				db.insert("cache", null, values);
+				
+				db.close();
+				 					
+			} catch (Exception e) {
+				e.printStackTrace();
+				System.out.println("Except founded");
+				
+			}
+			
+		}
+		
 
 	} 
 	
 	
 	protected void onResumeFragments() {
+		
+		
 		// TODO Auto-generated method stub
-		if (Application.NEED_FRESH==true) {
-			SharedPreferences sp=getSharedPreferences("SETTINGS", 0);
-	        int[] cityState={sp.getInt("city1",0),sp.getInt("city2",0),sp.getInt("city3",0)};
-	        cities[0] = sp.getString("city_weather1", "");
-	        cities[1] = sp.getString("city_weather2", "");
-	        cities[2] = sp.getString("city_weather3", "");
-	        
-	        System.out.println("city1 is : "+cityState[0]);
-	        System.out.println("city2 is : "+cityState[1]);
-	        System.out.println("city3 is : "+cityState[2]);
-	        
-	        if (cityState[0] == 1) {
-				wf1.changeState(1);
+		int cur = CURRINDEX;
+		
+		if (Application.NEED_FRESH == true) {
+			if (cur == Application.PAGE_NUM) {
+				Application.PAGE_NUM ++;
+				fragmentList.add(cur, new WFragment(cur, instance, 1));
+				fragmentList.removeLast();
+				fragmentList.add(new WFragment(Application.PAGE_NUM, instance, 0));
 			}
-	        if (cityState[1] == 1) {
-				wf2.changeState(1);
-			}
-	        if (cityState[2] == 1) {
-				wf3.changeState(1);
-			}
-	        
-	        for (int i = 0; i < 3; i++) {
-				if (cityState[i] == 1) {
-					Application.CITYLIST[i] = cities[i];
-					//fragmentList.add(new WFragment(i, instance, 1));
-					cities[i] = cities[i];
-					citiesUrls[i] = "http://api.map.baidu.com/telematics/v3/weather?location="+cities[i]+"+&output=json&ak=QdzoydNb3Ix9Qfik2sbRrOfm";
-					System.out.println("Resume WFragment added :" + citiesUrls[i]);
-				}
+		
 
+//			mPagerAdapter.update(fragmentList);
+			
+			for (WFragment f: fragmentList) {
+				System.out.println(f.getType());
 			}
-	        System.out.println("resume:"+CURRINDEX);
-	        resume = true;
-			getWeather();
-//			Constants.NEED_FRESH=false;
+			getWeather(cur);
 		}
+//			SharedPreferences sp=getSharedPreferences("SETTINGS", 0);
+//	        int state = sp.getInt("cityState" + String.valueOf(cur), 0);                                                        bindService( , null, state)
+//	        
+//	        cities[cur] = sp.getString("cityName" + String.valueOf(cur), "");
+//	        
+//	       
+//	        if (state == 1) {
+//				((WFragment) fragmentList.get(cur)).changeState(1);
+//			}	        
+//	        
+//			Application.CITYLIST[cur] = cities[cur];
+//
+//			citiesUrls[cur] = "http://api.map.baidu.com/telematics/v3/weather?location="+cities[cur]+"&output=json&ak=QdzoydNb3Ix9Qfik2sbRrOfm";
+//			System.out.println("Resume WFragment added :" + cities[cur]);
+//			
+//	     
+//	        resume = true;
+//	        
+//	        fragmentList.add(new WFragment(3, instance, 0));
+//			mPagerAdapter.update(fragmentList);
+//			getWeather(cur);
+//
+//		}
         super.onResumeFragments();
     }
 	
 	@Override
 	protected void onDestroy() {
 		// TODO Auto-generated method stub
-		if (net==true) {
+		if (net == true) {
 			j.cancel(true);
 		}
 		System.out.println("Main Destroyed");
@@ -361,14 +391,10 @@ public class MainActivity extends FragmentActivity {
 		
 	}	
 	
-	
-	private interface isLoadDataListener {
-        public void loadComplete();
-    }
-	
-	public void setLoadDataComplete(isLoadDataListener dataComplete) {
-        this.loadLisneter = dataComplete;
-    }
+	public void updateCities(int index, String city) {
+		if (cities.size() == 0||index == Application.PAGE_NUM) cities.add(city);
+		else cities.set(index, city);
+	}
 
 
 }
