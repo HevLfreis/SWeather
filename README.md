@@ -3,8 +3,8 @@ Delicate android weather app by viewpager and fragments
 
 Tap the city name can change current city and swipe down then up will delete the city.  
 [APK here](bin/SWeather.apk)
-## Screenshots
-![screenshots](res/drawable-hdpi/start_bg.png)
+
+Multipager branch aims dynamic adding or deleting viewpager. Under development.  
 
 waiting...
 
