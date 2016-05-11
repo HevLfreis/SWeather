@@ -43,8 +43,6 @@ public class MainActivity extends FragmentActivity {
 	
 	private ArrayList<String> cities;
 	
-//	private String[] cities = {"","",""};
-//	private String[] citiesUrls = {"","",""};
 	private JsonAsync j;
 	
 	public static int CURINDEX = 0;
@@ -107,7 +105,7 @@ public class MainActivity extends FragmentActivity {
 				
 //				if (event.getAction() == MotionEvent.ACTION_DOWN) {
 //					System.out.println("down");
-					if (!deleting && gd.onTouchEvent(event)) {
+					if (CURINDEX != Application.PAGE_NUM && !deleting && gd.onTouchEvent(event)) {
 						deleting = true;
 						System.out.println("Delete page : " + CURINDEX);
 						startDeleteAnim();
@@ -125,23 +123,11 @@ public class MainActivity extends FragmentActivity {
 	}
 	
 	public void startDeleteAnim() {
+		
 		Animation imagenter=AnimationUtils.loadAnimation(this, R.anim.slide_down_out);
  		mPager.startAnimation(imagenter);
  		
-// 		SharedPreferences sp =getSharedPreferences("SETTINGS", MODE_PRIVATE);
-//        Editor editor2 = sp.edit();
-//        editor2.putInt("cityState"+String.valueOf(CURINDEX), 0);
-//        editor2.putString("cityName"+String.valueOf(CURINDEX), "");
-//        editor2.commit();
-//        if (CURINDEX == 0) {
-//			wf1.changeState(0);
-//		}
-//        if (CURINDEX == 1) {
-//			wf2.changeState(0);
-//		}
-//        if (CURINDEX == 2) {
-//			wf3.changeState(0);
-//		}
+
         System.out.println("Page index deleted£º " + CURINDEX);
         
         cities.remove(CURINDEX);
@@ -199,8 +185,6 @@ public class MainActivity extends FragmentActivity {
 		@Override
 		protected void onPostExecute(String result) {
 
-			
-			
 			mPagerAdapter.notifyDataSetChanged();
 			if (resume) {
 				mPager.setCurrentItem(CURINDEX);
@@ -311,29 +295,7 @@ public class MainActivity extends FragmentActivity {
 		
 			getWeather(cur);
 		}
-//			SharedPreferences sp=getSharedPreferences("SETTINGS", 0);
-//	        int state = sp.getInt("cityState" + String.valueOf(cur), 0);                                                        bindService( , null, state)
-//	        
-//	        cities[cur] = sp.getString("cityName" + String.valueOf(cur), "");
-//	        
-//	       
-//	        if (state == 1) {
-//				((WFragment) fragmentList.get(cur)).changeState(1);
-//			}	        
-//	        
-//			Application.CITYLIST[cur] = cities[cur];
-//
-//			citiesUrls[cur] = "http://api.map.baidu.com/telematics/v3/weather?location="+cities[cur]+"&output=json&ak=QdzoydNb3Ix9Qfik2sbRrOfm";
-//			System.out.println("Resume WFragment added :" + cities[cur]);
-//			
-//	     
-//	        resume = true;
-//	        
-//	        fragmentList.add(new WFragment(3, instance, 0));
-//			mPagerAdapter.update(fragmentList);
-//			getWeather(cur);
-//
-//		}
+
         super.onResumeFragments();
     }
 	
