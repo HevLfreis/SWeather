@@ -51,7 +51,7 @@ public class MainActivity extends FragmentActivity {
 	private boolean deleting = false;
 	
 	private LinkedList<WFragment> fragmentList;
-	private WFragment wf1, wf2, wf3;
+	
 	private boolean resume = false;
 
 	@Override
