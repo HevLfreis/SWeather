@@ -50,7 +50,11 @@ public class MyPagerAdapter extends FragmentStatePagerAdapter{
 
 	@Override
 	public int getItemPosition(Object object) {
+		
 		// TODO Auto-generated method stub
+//		int index = fragmentList.indexOf(object);
+//		if (index == -1) return PagerAdapter.POSITION_NONE;
+//		else return index;
 		return PagerAdapter.POSITION_NONE;
 	}
 

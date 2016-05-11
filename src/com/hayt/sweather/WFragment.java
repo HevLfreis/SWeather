@@ -54,7 +54,7 @@ public class WFragment extends Fragment{
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		// TODO Auto-generated method stub
-		System.out.println("Fragment: "+id+" Cur index : "+MainActivity.CURRINDEX);
+		System.out.println("Fragment: "+id+" Cur index : "+MainActivity.CURINDEX);
 		super.onCreate(savedInstanceState);
 	}
 
@@ -105,9 +105,13 @@ public class WFragment extends Fragment{
 			DataBaseHelper dbHelper=new DataBaseHelper(context,"cache.db");  
 	        SQLiteDatabase db=dbHelper.getReadableDatabase();  
 	         
+//	        Cursor cursor=db.query("cache", new String[]{"timestamp", "city" ,"temp1","temp2","temp3","temp4","weather1",
+//	        		"weather2","weather3","weather4","index_d"}
+//	        , "pageid = ?",new String[]{ String.valueOf(id) }, null, null, "timestamp desc");  
+	        
 	        Cursor cursor=db.query("cache", new String[]{"timestamp", "city" ,"temp1","temp2","temp3","temp4","weather1",
 	        		"weather2","weather3","weather4","index_d"}
-	        , "pageid = ?",new String[]{ String.valueOf(id) }, null, null, "timestamp desc");  
+	        , "city like ?",new String[]{ MainActivity.instance.getCity(id)  }, null, null, "timestamp desc");  
 	        
 	        cursor.moveToNext();
 //	        if (cursor.isLast()) return fragmentView;
@@ -284,6 +288,28 @@ public class WFragment extends Fragment{
 		else  {
 			tq.setBackground(getResources().getDrawable(R.drawable.tq_unknown));
 		}
+		
+	}
+	
+	public void setIndexId(int id) {
+		this.id = id;
+		
+	}
+	
+	public int getIndexId() {
+		return id;
+		
+	}
+	
+	public String toString() {
+		return "WF: "+String.valueOf(id);
+		
+		
+	}
+	
+	public boolean equals(WFragment wf) {
+		return wf.getIndexId() == this.id;
+		
 		
 	}
 }

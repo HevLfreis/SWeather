@@ -14,7 +14,7 @@ public class Application extends Activity{
 	
 	private SharedPreferences settings, cityList, cityDialog;
 	private int count;
-	public static int PAGE_NUM = 0;
+	public static int PAGE_NUM, INT_INDEX = 0;
 //	public static boolean UPDATE_OVER = false;  //weather update finished
 	public static boolean NEED_FRESH = false;
 //	public static String[] CITYLIST = {"","",""};;
@@ -32,6 +32,7 @@ public class Application extends Activity{
 		cityDialog = getSharedPreferences("CITIES_DIALOG", MODE_PRIVATE);
 		count = settings.getInt("count", 0);
 		PAGE_NUM = settings.getInt("page-num", 0);
+		INT_INDEX = settings.getInt("cur-page", 0); 
 		
 		new Handler().postDelayed(new Runnable() {
 			

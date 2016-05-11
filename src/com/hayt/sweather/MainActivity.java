@@ -47,9 +47,10 @@ public class MainActivity extends FragmentActivity {
 //	private String[] citiesUrls = {"","",""};
 	private JsonAsync j;
 	
-	public static int CURRINDEX = 0;
+	public static int CURINDEX = 0;
 	
 	private boolean net = false;
+	private boolean deleting = false;
 	
 	private LinkedList<WFragment> fragmentList;
 	private WFragment wf1, wf2, wf3;
@@ -62,69 +63,21 @@ public class MainActivity extends FragmentActivity {
 		
 		getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN); 
         instance = this;
-        cities = new ArrayList<String>();
-        fragmentList = new LinkedList<WFragment>();
-//        wf1 = new WFragment(0, instance, 0);
-//        wf2 = new WFragment(1, instance, 0);
-//        wf3 = new WFragment(2, instance, 0);
-//        fragmentList.add(wf1);
-//        fragmentList.add(wf2);
-//        fragmentList.add(wf3);
+        
       
         mPager = (ViewPager)findViewById(R.id.tabpager);
         
-        //read setting data for create fragments
-        Map<String, ?> cityMap = getSharedPreferences("CITIES_LIST", 0).getAll();
-        int i = 0;
-        for(Map.Entry<String, ?>  entry : cityMap.entrySet()) {
-        	cities.add(entry.getKey());
-        	fragmentList.add(new WFragment(i++, instance, 1));
-        	System.out.println("City added : "+entry.getKey());
-        }
         
-        if (i != Application.PAGE_NUM) {
-        	System.out.println("Wrong ! ");
-			
-		}
-        fragmentList.add(new WFragment(Application.PAGE_NUM, instance, 0));
-        
-//        int[] cityState = {sp.getInt("cityState0",0),sp.getInt("cityState1",0),sp.getInt("cityState2",0)};
-//        cities[0] = sp.getString("cityName0", "");
-//        cities[1] = sp.getString("cityName1", "");
-//        cities[2] = sp.getString("cityName2", "");
+        updateCitiesFromSettings();
         
         System.out.println("Main start");
-//        System.out.println("city1 is : "+cities[0]+" state: "+cityState[0]);
-//        System.out.println("city2 is : "+cities[1]+" state: "+cityState[1]);
-//        System.out.println("city3 is : "+cities[2]+" state: "+cityState[2]);
-        
-        
-//        if (cityState[0] == 1) {
-//			wf1.changeState(1);
-//		}
-//        if (cityState[1] == 1) {
-//			wf2.changeState(1);
-//		}
-//        if (cityState[2] == 1) {
-//			wf3.changeState(1);
-//		}
-        
-//        for (int i = 0; i < 3; i++) {
-//			if (cityState[i] == 1) {
-//				Application.CITYLIST[i] = cities[i];
-//				
-//				// Important
-//				// the weather interface is deprecated, you can change it to a new interface
-//				citiesUrls[i] = "http://api.map.baidu.com/telematics/v3/weather?location="+cities[i]+"&output=json&ak=QdzoydNb3Ix9Qfik2sbRrOfm";
-//				System.out.println("WFragment added :" + citiesUrls[i]);
-//			}
-//		}
+
         
 		mPager.setOnPageChangeListener(new MyOnPageChangeListener());	
 		mPagerAdapter = new MyPagerAdapter(getSupportFragmentManager(), fragmentList);
         mPager.setAdapter(mPagerAdapter);
-		mPager.setOffscreenPageLimit(3);
-		mPager.setCurrentItem(1);
+//		mPager.setOffscreenPageLimit(3);
+		mPager.setCurrentItem(Application.INT_INDEX);
 		Animation imagenter=AnimationUtils.loadAnimation(this, R.anim.fade_in);
  		mPager.startAnimation(imagenter);
         ConnectionDetector cd = new ConnectionDetector(getApplicationContext());
@@ -143,17 +96,26 @@ public class MainActivity extends FragmentActivity {
 		 //gesture
 		 rl = (RelativeLayout) findViewById(R.id.title);
 
-		final
-		GestureDetector gd = new GestureDetector(instance, new GestureListener());
+		 final GestureDetector gd = new GestureDetector(instance, new GestureListener());
 		 
 		 rl.setOnTouchListener(new OnTouchListener() {
 			
 			@Override
 			public boolean onTouch(View v, MotionEvent event) {
 				// TODO Auto-generated method stub
-				if (gd.onTouchEvent(event)) {
-					startDeleteAnim();
-				}
+//				System.out.println(event.getActionMasked());
+				
+//				if (event.getAction() == MotionEvent.ACTION_DOWN) {
+//					System.out.println("down");
+					if (!deleting && gd.onTouchEvent(event)) {
+						deleting = true;
+						System.out.println("Delete page : " + CURINDEX);
+						startDeleteAnim();
+						return false;
+					}
+//				}
+				
+				
 				
 				return true;
 			}
@@ -165,30 +127,48 @@ public class MainActivity extends FragmentActivity {
 	public void startDeleteAnim() {
 		Animation imagenter=AnimationUtils.loadAnimation(this, R.anim.slide_down_out);
  		mPager.startAnimation(imagenter);
- 		SharedPreferences sp2 =getSharedPreferences("SETTINGS", MODE_PRIVATE);
-        Editor editor2 = sp2.edit();
-        editor2.putInt("cityState"+String.valueOf(CURRINDEX), 0);
-        editor2.putString("cityName"+String.valueOf(CURRINDEX), "");
-        editor2.commit();
-        if (CURRINDEX == 0) {
-			wf1.changeState(0);
+ 		
+// 		SharedPreferences sp =getSharedPreferences("SETTINGS", MODE_PRIVATE);
+//        Editor editor2 = sp.edit();
+//        editor2.putInt("cityState"+String.valueOf(CURINDEX), 0);
+//        editor2.putString("cityName"+String.valueOf(CURINDEX), "");
+//        editor2.commit();
+//        if (CURINDEX == 0) {
+//			wf1.changeState(0);
+//		}
+//        if (CURINDEX == 1) {
+//			wf2.changeState(0);
+//		}
+//        if (CURINDEX == 2) {
+//			wf3.changeState(0);
+//		}
+        System.out.println("Page index deleted£º " + CURINDEX);
+        
+        cities.remove(CURINDEX);
+        fragmentList.remove(CURINDEX);
+        Application.PAGE_NUM --;
+        for (int i = 0; i < fragmentList.size() - 1; i++) {
+        	fragmentList.get(i).setIndexId(i);
+			
 		}
-        if (CURRINDEX == 1) {
-			wf2.changeState(0);
-		}
-        if (CURRINDEX == 2) {
-			wf3.changeState(0);
-		}
-        System.out.println("Page index deleted£º " + CURRINDEX);
+        fragmentList.removeLast();
+		fragmentList.add(new WFragment(Application.PAGE_NUM, instance, 0));
+        System.out.println(fragmentList.toString());
+       
         
  		new Handler().postDelayed(new Runnable() {
 			
 			@Override
 			public void run() {
 				// TODO Auto-generated method stub
-				mPagerAdapter.notifyDataSetChanged();
+//				mPagerAdapter.notifyDataSetChanged();
 		        //Application.NEED_FRESH=true;
-		        mPager.setCurrentItem(CURRINDEX);
+				CURINDEX = CURINDEX - 1 < 0 ? 0 : CURINDEX - 1;
+				System.out.println(CURINDEX);
+		        mPager.setCurrentItem(CURINDEX);
+		        deleting = false;
+		        mPagerAdapter.notifyDataSetChanged();
+//		        getWeather(Application.PAGE_NUM);
 		 		
 			}
 		}, 700);
@@ -223,7 +203,7 @@ public class MainActivity extends FragmentActivity {
 			
 			mPagerAdapter.notifyDataSetChanged();
 			if (resume) {
-				mPager.setCurrentItem(CURRINDEX);
+				mPager.setCurrentItem(CURINDEX);
 				resume =false;
 			}
 			System.out.println("Updated weather");
@@ -315,7 +295,7 @@ public class MainActivity extends FragmentActivity {
 		
 		
 		// TODO Auto-generated method stub
-		int cur = CURRINDEX;
+		int cur = CURINDEX;
 		
 		if (Application.NEED_FRESH == true) {
 			if (cur == Application.PAGE_NUM) {
@@ -324,13 +304,11 @@ public class MainActivity extends FragmentActivity {
 				fragmentList.removeLast();
 				fragmentList.add(new WFragment(Application.PAGE_NUM, instance, 0));
 			}
-		
-
-//			mPagerAdapter.update(fragmentList);
-			
-			for (WFragment f: fragmentList) {
-				System.out.println(f.getType());
+			else {
+				
 			}
+			System.out.println("Need Add : "+ fragmentList.toString());
+		
 			getWeather(cur);
 		}
 //			SharedPreferences sp=getSharedPreferences("SETTINGS", 0);
@@ -359,13 +337,45 @@ public class MainActivity extends FragmentActivity {
         super.onResumeFragments();
     }
 	
+	
+	@Override
+	protected void onStart() {
+		// TODO Auto-generated method stub
+		System.out.println("Main start");
+		super.onStart();
+	}
+	
+	@Override
+	protected void onPause() {
+		// TODO Auto-generated method stub
+		System.out.println("Main pause");
+		saveCities2Settings();
+		super.onPause();
+	}
+
+	@Override
+	protected void onResume() {
+		// TODO Auto-generated method stub
+		System.out.println("Main resume");
+		super.onResume();
+	}
+
+
+	@Override
+	protected void onStop() {
+		// TODO Auto-generated method stub
+		System.out.println("Main stop");
+		saveCities2Settings();
+		super.onStop();
+	}
+
 	@Override
 	protected void onDestroy() {
 		// TODO Auto-generated method stub
 		if (net == true) {
 			j.cancel(true);
 		}
-		System.out.println("Main Destroyed");
+		System.out.println("Main destroy");
 		super.onDestroy();	
 	}
 	
@@ -386,7 +396,7 @@ public class MainActivity extends FragmentActivity {
 		@Override
 		public void onPageSelected(int arg0) {
 			// TODO Auto-generated method stub
-			CURRINDEX=arg0;
+			CURINDEX=arg0;
 		}
 		
 	}	
@@ -394,6 +404,59 @@ public class MainActivity extends FragmentActivity {
 	public void updateCities(int index, String city) {
 		if (cities.size() == 0||index == Application.PAGE_NUM) cities.add(city);
 		else cities.set(index, city);
+		System.out.println(cities.toString());
+	}
+	
+	private void updateCitiesFromSettings() {
+        cities = new ArrayList<String>();
+        fragmentList = new LinkedList<WFragment>();
+        //read setting data for create fragments
+        
+        String[] tmp = new String[Application.PAGE_NUM];
+        Map<String, ?> cityMap = getSharedPreferences("CITIES_LIST", 0).getAll();
+        
+        for(Map.Entry<String, ?>  entry : cityMap.entrySet()) {
+        	
+        	tmp[(Integer) entry.getValue()] = entry.getKey();
+        	
+        }
+        
+        for (int i = 0; i < tmp.length; i++) {
+        	cities.add(tmp[i]);
+        	fragmentList.add(new WFragment(i, instance, 1));
+        	System.out.println("City added : "+tmp[i]);
+        	
+        }
+        
+        fragmentList.add(new WFragment(Application.PAGE_NUM, instance, 0));
+		
+		
+	}
+	
+	private void saveCities2Settings() {
+		SharedPreferences settings = getSharedPreferences("SETTINGS", MODE_PRIVATE);
+		Editor editor1 = settings.edit();
+		
+		editor1.putInt("page-num", Application.PAGE_NUM);
+		editor1.putInt("cur-page", CURINDEX);
+		editor1.commit();
+		
+		SharedPreferences cityList = getSharedPreferences("CITIES_LIST", MODE_PRIVATE);
+		Editor editor2 = cityList.edit();
+		editor2.clear().commit();
+		for (int i = 0; i < cities.size(); i++) {
+			editor2.putInt(cities.get(i), i);
+			
+		}
+		
+		editor2.commit();
+		
+		
+	}
+	
+	public String getCity(int index) {
+		return cities.get(index);
+		
 	}
 
 

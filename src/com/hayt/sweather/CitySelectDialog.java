@@ -206,8 +206,8 @@ private int id;
 				
 			}
 			System.out.println("Page new city update : " + cityName);
-			MainActivity.CURRINDEX = id;
-			System.out.println("Page selcted: " + MainActivity.CURRINDEX);
+			MainActivity.CURINDEX = id;
+			System.out.println("Page selected: " + MainActivity.CURINDEX);
 			finish();
 			
 		}

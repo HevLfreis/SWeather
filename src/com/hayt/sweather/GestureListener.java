@@ -11,10 +11,10 @@ public class GestureListener extends SimpleOnGestureListener{
 	public boolean onScroll(MotionEvent e1, MotionEvent e2, float distanceX,
 			float distanceY) {
 		// TODO Auto-generated method stub
-		//System.out.println("scroll1:"+ e1.getAction()+"-"+distanceY);
-		//System.out.println("scroll2:"+ e2.getAction()+"-"+distanceY);
-		if (distanceY>20) {
-			//System.out.println("scroll1:"+ e1.getAction()+"-"+distanceY);
+//		System.out.println("scroll1:"+ e1.getAction()+"-"+distanceY);
+//		System.out.println("scroll2:"+ e2.getAction()+"-"+distanceY);
+		if (distanceY > 20) {
+//			System.out.println("scroll1:"+ e1.getAction()+"-"+distanceY);
 			return true;
 		}
 		else {
