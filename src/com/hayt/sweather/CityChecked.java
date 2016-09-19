@@ -35,6 +35,4 @@ public class CityChecked{
 		}
 		return false;
 	}
-
-
 }

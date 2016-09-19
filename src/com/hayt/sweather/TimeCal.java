@@ -5,8 +5,7 @@ import java.util.Calendar;
 
 
 public class TimeCal {
-	
-	//ÏµÍ³½ñÌìÊ±¼ä
+
 	private int second;
 	private int minute;
 	private int hour;
@@ -14,9 +13,8 @@ public class TimeCal {
 	private int year;
 	private int month;
 	private int dayofmonth;
-	
-	//ÓÃ»§ÉèÖÃÊ±¼ä
-	private int getYear,getDayofMonth,getMonth=0;
+
+	private int getYear, getDayofMonth, getMonth = 0;
 	
 	public TimeCal(){
 	     Calendar calendar =Calendar.getInstance();
@@ -28,22 +26,17 @@ public class TimeCal {
          this.month =calendar.get(Calendar.MONTH);
          this.dayofmonth =calendar.get(Calendar.DAY_OF_MONTH);
 	}
-	
-	//·µ»Øµ±ÌìÈÕÆÚ
+
 	public int[] getCurrentDate() {
-		int result[]={month+1,dayofmonth};
-		return result;
-		
+		return new int[]{month+1, dayofmonth};
 	}
-	public int getCurerentHour() {
+
+	public int getCurrentHour() {
 		return hour;
 	}
 	
 	public String getCurrentDateString(){
-		String result=String.valueOf(year)+"Äê"+String.valueOf(month+1)+"ÔÂ"+String.valueOf(dayofmonth)+"ÈÕ";
-		return result;
-		
-		
+		return String.valueOf(year)+"å¹´"+String.valueOf(month+1)+"æœˆ"+String.valueOf(dayofmonth)+"æ—¥";
 	}
 
 }

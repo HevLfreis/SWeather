@@ -5,7 +5,6 @@ import java.io.InputStream;
 import java.util.Arrays;
 import java.util.Map;
 
-import android.R.integer;
 import android.app.Activity;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -21,171 +20,157 @@ import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.TextView.OnEditorActionListener;
 
-public class CitySelectDialog extends Activity{
-	
-	
-private TextView ok,cancel=null;
-private RadioGroup citys =null;
-private RadioButton base, city1, city2, city3 =null;
-private EditText editText;
-private String cityName;
-private String[] namemem;
-private String cityNamefromRB=null;
-private int id;
+public class CitySelectDialog extends Activity {
 
-	@Override
-	protected void onCreate(Bundle savedInstanceState) {
-		// TODO Auto-generated method stub
-		super.onCreate(savedInstanceState);
-		
-		setContentView(R.layout.city_select);
-		ok=(TextView) findViewById(R.id.dialogLeftBtn);
-		cancel=(TextView) findViewById(R.id.dialogRightBtn);
-		citys=(RadioGroup) findViewById(R.id.radioGroup_cityselect);
-		base=(RadioButton) findViewById(R.id.radio_base);
-		city1=(RadioButton) findViewById(R.id.radio_city1);
-		city2=(RadioButton) findViewById(R.id.radio_city2);
-		city3=(RadioButton) findViewById(R.id.radio_city3);
-		
-		Intent intent = getIntent();
+    private TextView ok, cancel = null;
+    private RadioGroup cities = null;
+    private RadioButton base, city1, city2, city3 = null;
+    private EditText editText;
+    private String cityName;
+    private String[] namemem;
+    private String cityNamefromRB = null;
+    private int id;
 
-		id = intent.getIntExtra("page", 0);
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        // TODO Auto-generated method stub
+        super.onCreate(savedInstanceState);
 
-		
-		ok.setOnClickListener(new oklistener());
-		cancel.setOnClickListener(new cancellistener());
+        setContentView(R.layout.city_select);
+        ok = (TextView) findViewById(R.id.dialogLeftBtn);
+        cancel = (TextView) findViewById(R.id.dialogRightBtn);
+        cities = (RadioGroup) findViewById(R.id.radioGroup_cityselect);
+        base = (RadioButton) findViewById(R.id.radio_base);
+        city1 = (RadioButton) findViewById(R.id.radio_city1);
+        city2 = (RadioButton) findViewById(R.id.radio_city2);
+        city3 = (RadioButton) findViewById(R.id.radio_city3);
 
-		
+        Intent intent = getIntent();
+
+        id = intent.getIntExtra("page", 0);
+
+
+        ok.setOnClickListener(new okListener());
+        cancel.setOnClickListener(new cancelListener());
+
+
         Map<String, ?> cityMap = getSharedPreferences("CITIES_DIALOG", 0).getAll();
-        
+
         namemem = new String[3];
-        
+
         int i = 0;
-        for(Map.Entry<String, ?>  entry : cityMap.entrySet()) {
-        	namemem[i++] = (String) entry.getValue();
+        for (Map.Entry<String, ?> entry : cityMap.entrySet()) {
+            namemem[i++] = (String) entry.getValue();
         }
-		
-		
 
-		//≥ı ºªØradiobuttonŒƒ◊÷
-		city1.setText(namemem[2]);
-		city2.setText(namemem[1]);
-		city3.setText(namemem[0]);
+        city1.setText(namemem[2]);
+        city2.setText(namemem[1]);
+        city3.setText(namemem[0]);
 
-        editText=(EditText) findViewById(R.id.edit_city);
-   	    editText.setOnEditorActionListener(new OnEditorActionListener(){
+        editText = (EditText) findViewById(R.id.edit_city);
+        editText.setOnEditorActionListener(new OnEditorActionListener() {
 
-		@Override
-		public boolean onEditorAction(TextView arg0, int arg1, KeyEvent arg2) {
-			// TODO Auto-generated method stub
-			//Toast.makeText(MainActivity.this, "’˝‘⁄≤È—Ø", Toast.LENGTH_SHORT).show(); 
-			return false;
-		}			
-   	   });
+            @Override
+            public boolean onEditorAction(TextView arg0, int arg1, KeyEvent arg2) {
+                // TODO Auto-generated method stub
+                return false;
+            }
+        });
 
-	   base.setChecked(true);
+        base.setChecked(true);
 
-	   citys.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener(){
-			
+        cities.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
 
-			@Override
-			public void onCheckedChanged(RadioGroup group, int checkedId) {
-				// TODO Auto-generated method stub
-				
-                if (base.getId()==checkedId) {
-                	editText.setVisibility(0);					
-				}
-                else if (city1.getId()==checkedId) {
-                	cityNamefromRB=namemem[2];
-                	editText.setVisibility(8);	
-				}
-                else if (city2.getId()==checkedId) {
-                	cityNamefromRB=namemem[1];
-                	editText.setVisibility(8);	
-				}
-                else if (city3.getId()==checkedId) {
-                	cityNamefromRB=namemem[0];
-                	editText.setVisibility(8);	
-				}
-               
-			}
-	
-		});
-		
-	}
-	
-	class oklistener implements OnClickListener{
+            @Override
+            public void onCheckedChanged(RadioGroup group, int checkedId) {
+                // TODO Auto-generated method stub
 
-		@Override
-		public void onClick(View arg0) {
-			// TODO Auto-generated method stub
+                if (base.getId() == checkedId) {
+                    editText.setVisibility(0);
+                } else if (city1.getId() == checkedId) {
+                    cityNamefromRB = namemem[2];
+                    editText.setVisibility(8);
+                } else if (city2.getId() == checkedId) {
+                    cityNamefromRB = namemem[1];
+                    editText.setVisibility(8);
+                } else if (city3.getId() == checkedId) {
+                    cityNamefromRB = namemem[0];
+                    editText.setVisibility(8);
+                }
 
-			if (base.isChecked()) {
-				InputStream inputStream = getResources().openRawResource(R.raw.citycode);
-				cityName = editText.getText().toString();
-				
-				if (!CityChecked.existed(inputStream, cityName)) {
-					Toast.makeText(CitySelectDialog.this, "«Î’˝»∑ ‰»Î", Toast.LENGTH_SHORT).show();
-					finish();
-					return;
-					
-				}
-				//Toast.makeText(CityWeatherSelectDialog.this, cityCode, Toast.LENGTH_SHORT).show();
-				namemem[0]=namemem[1];
-                namemem[1]=namemem[2];
-                namemem[2]=cityName;
-                
-                
-                //∏¸–¬selector…Ë÷√ª∫¥Ê
-			    SharedPreferences sp =getSharedPreferences("CITIES_DIALOG", MODE_PRIVATE);
-		        Editor editor = sp.edit();
-		        
-		        System.out.println(Arrays.toString(namemem));
-		        
-		        for (int i = 0; i < 3; i++) {
-		        	editor.putString("temp"+String.valueOf(i), namemem[i]);
-		        }
+            }
 
-		        editor.commit();
-		        
-		        MainActivity.instance.updateCities(id, cityName);;
-		        Toast.makeText(CitySelectDialog.this,"’˝‘⁄∏¸–¬...",Toast.LENGTH_SHORT ).show();
-		        Application.NEED_FRESH=true;
-			
-			}
-			else {
-				cityName=cityNamefromRB;
-				System.out.println("ID : "+id+" city : "+cityName+" update");
-				MainActivity.instance.updateCities(id, cityName);
+        });
 
-		        Toast.makeText(CitySelectDialog.this,"’˝‘⁄∏¸–¬...",Toast.LENGTH_SHORT ).show();
-		        Application.NEED_FRESH = true;
-          	
-				
-			}
-			System.out.println("Page new city update : " + cityName);
-			MainActivity.CURINDEX = id;
-			System.out.println("Page selected: " + MainActivity.CURINDEX);
-			finish();
-			
-		}
-		
-	}
-	
+    }
 
-	class cancellistener implements OnClickListener{
+    class okListener implements OnClickListener {
 
-		@Override
-		public void onClick(View v) {
-			// TODO Auto-generated method stub
-			
-			finish();
-		}
-		
-	}
+        @Override
+        public void onClick(View arg0) {
+            // TODO Auto-generated method stub
+
+            if (base.isChecked()) {
+                InputStream inputStream = getResources().openRawResource(R.raw.citycode);
+                cityName = editText.getText().toString();
+
+                if (!CityChecked.existed(inputStream, cityName)) {
+                    Toast.makeText(CitySelectDialog.this, "ËØ∑Ê≠£Á°ÆËæìÂÖ•", Toast.LENGTH_SHORT).show();
+                    finish();
+                    return;
+                }
+                //Toast.makeText(CityWeatherSelectDialog.this, cityCode, Toast.LENGTH_SHORT).show();
+                namemem[0] = namemem[1];
+                namemem[1] = namemem[2];
+                namemem[2] = cityName;
+
+                SharedPreferences sp = getSharedPreferences("CITIES_DIALOG", MODE_PRIVATE);
+                Editor editor = sp.edit();
+
+                System.out.println(Arrays.toString(namemem));
+
+                for (int i = 0; i < 3; i++) {
+                    editor.putString("temp" + String.valueOf(i), namemem[i]);
+                }
+
+                editor.commit();
+
+                MainActivity.instance.updateCities(id, cityName);
+
+                Toast.makeText(CitySelectDialog.this, "Ê≠£Âú®Êõ¥Êñ∞...", Toast.LENGTH_SHORT).show();
+                Application.NEED_FRESH = true;
+
+            } else {
+                cityName = cityNamefromRB;
+                System.out.println("ID : " + id + " city : " + cityName + " update");
+                MainActivity.instance.updateCities(id, cityName);
+
+                Toast.makeText(CitySelectDialog.this, "ÔøΩÔøΩÔøΩ⁄∏ÔøΩÔøΩÔøΩ...", Toast.LENGTH_SHORT).show();
+                Application.NEED_FRESH = true;
+
+
+            }
+            System.out.println("Page new city update : " + cityName);
+            MainActivity.CURINDEX = id;
+            System.out.println("Page selected: " + MainActivity.CURINDEX);
+            finish();
+
+        }
+
+    }
+
+
+    class cancelListener implements OnClickListener {
+
+        @Override
+        public void onClick(View v) {
+            // TODO Auto-generated method stub
+            finish();
+        }
+    }
 
 }
-			
+
 			
 			
 
